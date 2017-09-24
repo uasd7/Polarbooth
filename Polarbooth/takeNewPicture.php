@@ -19,7 +19,7 @@ $shootimage = shell_exec('sudo gphoto2 --capture-image-and-download --filename='
 // image scale
 list($width, $height) = getimagesize($filenamePhoto);
 $newWidth = 1200;
-$newHeight = $newwidth / $width * $height;
+$newHeight = $newWidth / $width * $height;
 $source = imagecreatefromjpeg($filenamePhoto);
 $thumb = imagecreatetruecolor($newWidth, $newHeight);
 imagecopyresized($thumb, $source, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
