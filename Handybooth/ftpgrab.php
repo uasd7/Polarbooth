@@ -2,13 +2,13 @@
 /**
  * Created by PhpStorm.
  * User: sts
- * Date: 22.09.17
- * Time: 21:24
+ * Date: 23.09.17
+ * Time: 08:36
  */
 
-chdir('/home/pi/Pictures');
+require_once('../config/init.php');
 
-function ftpFilesList($conn, $dir)
+function getFtpFilesList($conn, $dir)
 {
     $files = [];
     $list = ftp_nlist($conn, $dir);
@@ -18,7 +18,7 @@ function ftpFilesList($conn, $dir)
 
             $path = $dir . '/' . $filename;
             if (ftp_size($conn, $path) === -1) {
-                $files = array_merge($files, ftpFilesList($conn, $path));
+                $files = array_merge($files, getFtpFilesList($conn, $path));
             } else {
                 $files[] = substr($path, strpos($path, '/') + 1);
             }
@@ -28,41 +28,54 @@ function ftpFilesList($conn, $dir)
     return $files;
 }
 
-function getNextFileName()
+function processFile($conn, $config, $file)
 {
-    $files = scandir('.');
-    $lastFile = array_slice($files, -1);
+    $newFileName = md5(time()).'.jpg';
 
-    if ($lastFile === '..' || $lastFile === '.') {
-        $nextFile = '000001.jpg';
-    } else {
-        $nextFile = substr('0000000' . (intval(explode('.', $lastFile)[0], 10) + 1) . '.jpg', -10);
+    $fileNamePhoto = $config['folders']['full'].DIRECTORY_SEPARATOR.$newFileName;
+    $fileNameThumb = $config['folders']['thumb'].DIRECTORY_SEPARATOR.$newFileName;
+
+    $tmpFile = tempnam(sys_get_temp_dir(), 'handyBooth_');
+
+    if (ftp_get($conn, $tmpFile, $file, FTP_BINARY)) {
+        rename($tmpFile, $fileNamePhoto);
+        chmod($fileNamePhoto, 0755);
+
+        ftp_delete($conn, $file);
+
+        // image scale
+        list($width, $height) = getimagesize($fileNamePhoto);
+        $newWidth = 1200;
+        $newHeight = $newWidth / $width * $height;
+        $source = imagecreatefromjpeg($fileNamePhoto);
+        $thumb = imagecreatetruecolor($newWidth, $newHeight);
+        imagecopyresized($thumb, $source, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+        imagejpeg($thumb, $fileNameThumb);
+
+        // insert into database
+        $list = [];
+        if (is_file($config['listFile'])) {
+            $list = json_decode(file_get_contents($config['listFile']));
+        }
+        $list[] = $file;
+        file_put_contents($config['listFile'], json_encode($list));
     }
-
-    return $nextFile;
 }
 
-$conn = ftp_connect('192.168.178.30', 2221);
-$loginResult = ftp_login($conn, 'android', 'android');
+
+$conn = ftp_connect($config['handyBooth']['ftp']['host'], $config['handyBooth']['ftp']['port']);
+$loginResult = ftp_login($conn, $config['handyBooth']['ftp']['user'], $config['handyBooth']['ftp']['password']);
 
 if (!$conn || !$loginResult) {
     echo 'FTP-Verbindung ist fehlgeschlagen.';
     exit;
 }
 
-$tree = ftpFilesList($conn, '/');
+$tree = getFtpFilesList($conn, '/');
 
 foreach ($tree as $file) {
-    $tmpFile = tempnam(sys_get_temp_dir(), 'photobox_');
-
-    if (ftp_get($conn, $tmpFile, $file, FTP_BINARY)) {
-        $newFile = getNextFileName();
-        rename($tmpFile, $newFile);
-        chmod($newFile, 0755);
-        ftp_delete($conn, $file);
-    }
+    processFile($conn, $config, $file);
 }
 
 ftp_close($conn);
-sleep(0.3);
 exit;
