@@ -5,6 +5,28 @@
     <title>Title</title>
 </head>
 <body>
-    sadsdfsdf
+    <div id="image-container"></div>
+    <script>
+        (function () {
+            require('./renderer.js');
+
+            let electron = require('electron');
+            let glob = require('glob');
+            let fs = require('fs');
+
+            let userPath = electron.remote.getGlobal('sharedObject').userPath;
+            let files = {};
+            let imageContainer = document.getElementById('image-container');
+
+            let slideChangeTransition = function (newFile) {
+
+            };
+
+            let myWorker = new Worker('worker.js');
+            myWorker.onmessage = function (e) {
+                console.log(e);
+            };
+        })();
+    </script>
 </body>
 </html>

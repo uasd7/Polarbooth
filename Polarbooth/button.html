@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        button {
+            background-color: #FF0000;
+            border: 2px solid #000000;
+            border-radius: 99999px;
+            width: 300px;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <button>Foto</button>
+
+    <script>
+        (function () {
+            let button = document.querySelector('button');
+            button.addEventListener('click', function () {
+                let httpRequest = new XMLHttpRequest();
+                httpRequest.open('GET', 'takePicture.php', true);
+                httpRequest.send();
+            });
+        })();
+    </script>
+</body>
+</html>
