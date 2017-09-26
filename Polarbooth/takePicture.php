@@ -17,16 +17,18 @@ try {
     $fileNameThumb = $config['folders']['thumb'].DIRECTORY_SEPARATOR.$file;
 
     $shootimage = shell_exec('sudo gphoto2 --capture-image-and-download --filename='.$fileNamePhoto.' images');
-    print_r('Foto');
+    echo "\nFoto";
 
 // image scale
     list($width, $height) = getimagesize($fileNamePhoto);
-    print_r('width: '.$width);
-    print_r('height: '.$height);
+    echo "\nwidth: ".$width;
+    echo "\nheight: ".$height;
     $newWidth = 1200;
     $newHeight = $newWidth / $width * $height;
     $source = imagecreatefromjpeg($fileNamePhoto);
+    echo "\nsource: ".$source;
     $thumb = imagecreatetruecolor($newWidth, $newHeight);
+    echo "\nthumb: ".$thumb;
     imagecopyresized($thumb, $source, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
     imagejpeg($thumb, $fileNameThumb);
 
@@ -36,6 +38,7 @@ try {
         $list = json_decode(file_get_contents($config['listFile']));
     }
     $list[] = $file;
+    echo "\nlist: ".json_encode($list);
 
     file_put_contents($config['listFile'], json_encode($list));
 } catch (Exception $e) {
