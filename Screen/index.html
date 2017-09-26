@@ -24,14 +24,10 @@
 
             let updateFunc = function () {
                 fs.readFile('/home/pi/Pictures/thumb/images.txt', 'utf-8', (err, data) => {
-                    if (err) {
-                        alert("An error ocurred reading the file :" + err.message);
-                        updateFunc();
-                        return;
+                    if (!err && data && data !== '') {
+                        data = JSON.parse(data);
+                        console.log(data);
                     }
-
-                    // Change how to handle the file content
-                    console.log("The file content is : " + data);
                     updateFunc();
                 });
             };
