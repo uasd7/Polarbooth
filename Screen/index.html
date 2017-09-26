@@ -22,10 +22,20 @@
 
             };
 
-            let myWorker = new Worker('worker.js');
-            myWorker.onmessage = function (e) {
-                console.log(e);
+            let updateFunc = function () {
+                fs.readFile('/home/pi/Pictures/thumb/images.txt', 'utf-8', (err, data) => {
+                    if (err) {
+                        alert("An error ocurred reading the file :" + err.message);
+                        updateFunc();
+                        return;
+                    }
+
+                    // Change how to handle the file content
+                    console.log("The file content is : " + data);
+                    updateFunc();
+                });
             };
+            updateFunc();
         })();
     </script>
 </body>
