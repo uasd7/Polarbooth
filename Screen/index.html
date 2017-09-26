@@ -28,7 +28,8 @@
                         data = JSON.parse(data);
                         console.log(data);
                     }
-                    updateFunc();
+                    window.setTimeout(updateFunc, 1500);
+                    //updateFunc();
                 });
             };
             updateFunc();
