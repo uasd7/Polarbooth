@@ -37,7 +37,7 @@ try {
     if (is_file($config['listFile'])) {
         $list = json_decode(file_get_contents($config['listFile']));
     }
-    $list[] = $file;
+    $list[] = $config['folders']['thumb'].DIRECTORY_SEPARATOR.$file;
     echo "\nlist: ".json_encode($list);
 
     file_put_contents($config['listFile'], json_encode($list));
