@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="image-container"></div>
@@ -15,21 +16,46 @@
             let fs = require('fs');
 
             let userPath = electron.remote.getGlobal('sharedObject').userPath;
-            let files = {};
-            let imageContainer = document.getElementById('image-container');
+            let files = [];
+            let imgContainer = document.getElementById('image-container');
+            let oldData = '';
 
             let slideChangeTransition = function (newFile) {
-
+                if (files.indexOf(newFile) !== -1) {
+                    return;
+                }
+                let toRemove = imgContainer.querySelectorAll('.out');
+                if (toRemove) {
+                    for (let i = 0; i < toRemove.length; i++) {
+                        toRemove[i].parentNode.removeChild(toRemove[i]);
+                    }
+                }
+                let lastImg = imgContainer.lastChild;
+                let img = document.createElement('div');
+                img.style.backgroundImage = 'url("' + newFile + '")';
+                img.classList.add('slide');
+                img.classList.add('new');
+                imgContainer.appendChild(img);
+                window.setTimeout(function () {
+                    img.classList.remove('new');
+                    if (lastImg) {
+                        lastImg.classList.add('out');
+                    }
+                }, 100);
             };
 
             let updateFunc = function () {
+//                fs.readFile('./images.txt', 'utf-8', (err, data) => {
                 fs.readFile('/home/pi/Pictures/thumb/images.txt', 'utf-8', (err, data) => {
-                    if (!err && data && data !== '') {
+                    if (!err && data && data !== oldData) {
+                        oldData = data;
                         data = JSON.parse(data);
-                        console.log(data);
+                        if(data.length > 0) {
+                            slideChangeTransition(data[data.length - 1]);
+                        }
+                        console.log(data, oldData);
                     }
                     window.setTimeout(updateFunc, 1500);
-                    //updateFunc();
                 });
             };
             updateFunc();
