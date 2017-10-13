@@ -29,3 +29,4 @@ fabric.properties
 /Screen/node_modules/*
 /Screen/node_modules/
 /photobooth/
+/config/config.php
