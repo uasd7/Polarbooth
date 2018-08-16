@@ -6,7 +6,7 @@
  * Time: 21:58
  */
 
-require_once('config.php.dist');
+require_once('config.php');
 
 foreach ($config['folders'] as $directory) {
     if (!is_dir($directory)) {
