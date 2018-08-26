@@ -14,7 +14,7 @@ try:
     if GPIO.input(40):
       subprocess.call("/usr/bin/php /var/www/html/Polarbooth/takePicture.php", shell=True)
     else:
-      time.sleep(0.3)
+      time.sleep(0.2)
 
 except KeyboardInterrupt:
   GPIO.cleanup()

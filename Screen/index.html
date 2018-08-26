@@ -44,21 +44,17 @@
                 }, 100);
             };
 
-            let updateFunc = function () {
-//                fs.readFile('./images.txt', 'utf-8', (err, data) => {
-                fs.readFile('/home/pi/Pictures/thumb/images.txt', 'utf-8', (err, data) => {
+            fs.watch('/media/usb/thumb/images.txt', () => {
+                fs.readFile('/media/usb/thumb/images.txt', 'utf-8', (err, data) => {
                     if (!err && data && data !== oldData) {
                         oldData = data;
                         data = JSON.parse(data);
                         if(data.length > 0) {
                             slideChangeTransition(data[data.length - 1]);
                         }
-                        console.log(data, oldData);
                     }
-                    window.setTimeout(updateFunc, 1500);
-                });
-            };
-            updateFunc();
+	        });
+            });
         })();
     </script>
 </body>
