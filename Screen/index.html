@@ -10,7 +10,6 @@
     <script>
         (function () {
             require('./renderer.js');
-
             let electron = require('electron');
             let glob = require('glob');
             let fs = require('fs');
@@ -41,19 +40,19 @@
                     if (lastImg) {
                         lastImg.classList.add('out');
                     }
-                }, 100);
+                }, 0);
             };
 
-            fs.watch('/media/usb/thumb/images.txt', () => {
-                fs.readFile('/media/usb/thumb/images.txt', 'utf-8', (err, data) => {
-                    if (!err && data && data !== oldData) {
-                        oldData = data;
-                        data = JSON.parse(data);
-                        if(data.length > 0) {
-                            slideChangeTransition(data[data.length - 1]);
-                        }
+            let changeTimeout = false;
+            fs.watch('/media/usb/thumb', (eventType, filename) => {
+                if (filename && eventType === 'change') {
+                    if (changeTimeout) {
+                        window.clearTimeout(changeTimeout);
                     }
-	        });
+                    changeTimeout = window.setTimeout(function () {
+                        slideChangeTransition('/media/usb/thumb/' + filename);
+                    }, 100);
+                }
             });
         })();
     </script>

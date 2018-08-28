@@ -11,5 +11,8 @@
   "license": "MIT",
   "dependencies": {
     "electron": "^1.6.13"
+  },
+  "devDependencies": {
+    "hound": "^1.0.5"
   }
 }
