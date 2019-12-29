@@ -40,10 +40,20 @@
                     if (lastImg) {
                         lastImg.classList.add('out');
                     }
-                }, 0);
+                }, 50);
             };
 
             let changeTimeout = false;
+            fs.watch('/media/usb', (eventType, filename) => {
+                if (eventType === 'rename' && filename === 'waiting.txt') {
+                    if (fs.existsSync('/media/usb/' + filename)) {
+                        let img = imgContainer.lastChild;
+                        if (img) {
+                            img.classList.add('waiting');
+                        }
+                   }
+                }
+            });
             fs.watch('/media/usb/thumb', (eventType, filename) => {
                 if (filename && eventType === 'change') {
                     if (changeTimeout) {
@@ -51,7 +61,7 @@
                     }
                     changeTimeout = window.setTimeout(function () {
                         slideChangeTransition('/media/usb/thumb/' + filename);
-                    }, 100);
+                    }, 200);
                 }
             });
         })();

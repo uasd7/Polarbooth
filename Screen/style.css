@@ -1,6 +1,7 @@
 body {
     margin: 0;
     background: #000;
+    cursor: none;
 }
 
 #image-container {
@@ -12,6 +13,7 @@ body {
 }
 
 .slide {
+    z-index: 5;
     position: absolute;
     top: 0;
     left: 0;
@@ -30,4 +32,44 @@ body {
 
 .slide.out {
     opacity: 0;
+    z-index: 1;
+}
+
+.slide.waiting {
+    z-index: 1;
+}
+
+.slide.waiting:before {
+    content: '';
+    z-index: 2;
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.375);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(359deg);
+    }
+}
+
+.slide.waiting:after {
+    will-change: transform;
+    content: '';
+    z-index: 3;
+    position: absolute;
+    top: 25vh;
+    left: calc(50vw - 25vh);
+    width: 50vh;
+    height: 50vh;
+    border-radius: 100%;
+    border: 10px solid #666;
+    border-top-color: #08C;
+    animation: rotate 2s infinite linear;
 }

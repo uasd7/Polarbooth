@@ -30,3 +30,6 @@ fabric.properties
 /Screen/node_modules/
 /photobooth/
 /config/config.php
+/Polarbooth/log.txt
+/Polarbooth/my-logfile.txt
+
